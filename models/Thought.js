@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const reactionSchema = require('./Reaction.js')
+const moment = require('moment');
 
 // Schema to create a thought model
 const thoughtSchema = new Schema(
@@ -13,9 +14,7 @@ const thoughtSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now(),
-      // need add getter here
-      // Use a getter method to format the timestamp on query
-
+      get: (createdAtVal) => moment(createdAtVal).format('MMM DD, YYYY [at] hh:mm a')
     },
     username: {
       type: String,

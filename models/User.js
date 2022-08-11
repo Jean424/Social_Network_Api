@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-
+const moment = require('moment');
 // Schema to create Student model
 const userSchema = new Schema(
   {
@@ -7,7 +7,7 @@ const userSchema = new Schema(
       type: String,
       unique: true,
       required: true,
-      trimmed: true
+      trim: true
     },
     email: {
       type: String,
@@ -27,6 +27,7 @@ const userSchema = new Schema(
   {
     toJSON: {
       virtuals: true,
+      getters: true
     },
     id: false,
   }
