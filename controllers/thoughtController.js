@@ -17,20 +17,17 @@ module.exports = {
   // Get a single thought
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
-      .select('-__v')
-      .lean()
-      .then(async (thought) =>
-        !thought
-          ? res.status(404).json({ message: 'No thought with that ID' })
-          : res.json({
-              thought,
-              grade: await grade(req.params.thoughtId),
-            })
-      )
-      .catch((err) => {
-        console.log(err);
-        return res.status(500).json(err);
-      });
+    .populate({
+      path: 'User',
+      select: '-__v'
+      })
+    .select('-__v')
+    .sort({ _id: -1 })
+    .then(dbThoughtData => res.json(dbThoughtData))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err)
+ })
   },
   // create a new thought
   createThought(req, res) {

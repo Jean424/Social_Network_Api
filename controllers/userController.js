@@ -30,13 +30,14 @@ module.exports = {
   // Delete a user
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: req.params.userId })
-      .then((user) =>
-        !user
-          ? res.status(404).json({ message: 'No user with that ID' })
-          : Student.deleteMany({ _id: { $in: user.students } })
-      )
-      .then(() => res.json({ message: 'User and thoughts deleted!' }))
-      .catch((err) => res.status(500).json(err));
+    .then(dbUserData => {
+      if (!dbUserData) {
+          res.status(404).json({ message: 'No user found with this ID!' });
+          return;
+      }
+      res.json(dbUserData);
+  })
+  .catch(err => res.status(400).json(err))
   },
   // Update a user
   updateUser(req, res) {
@@ -45,12 +46,14 @@ module.exports = {
       { $set: req.body },
       { runValidators: true, new: true }
     )
-      .then((user) =>
-        !user
-          ? res.status(404).json({ message: 'No user with this id!' })
-          : res.json(user)
-      )
-      .catch((err) => res.status(500).json(err));
+    .then(dbUserData => {
+      if (!dbUserData) {
+          res.status(404).json({ message: 'No user found with this ID!' });
+          return;
+      }
+      res.json(dbUserData);
+  })
+  .catch(err => res.json(err))
   },
 
   //add friend
