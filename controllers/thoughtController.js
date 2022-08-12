@@ -18,7 +18,7 @@ module.exports = {
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
     .populate({
-      path: 'User',
+      path: 'user',
       select: '-__v'
       })
     .select('-__v')
@@ -38,26 +38,13 @@ module.exports = {
   // Delete a thought and remove them from the user
   deleteThought(req, res) {
     Thought.findOneAndRemove({ _id: req.params.thoughtId })
-      .then((thought) =>
-        !thought
-          ? res.status(404).json({ message: 'No such thought exists' })
-          : User.findOneAndUpdate(
-              { thoughts: req.params.thoughtId },
-              { $pull: { thoughts: req.params.thoughtId } },
-              { new: true }
-            )
-      )
-      .then((userdata) =>
-        !userdata
-          ? res.status(404).json({
-              message: 'Thought deleted, but no user found',
-            })
-          : res.json({ message: 'Thought successfully deleted' })
-      )
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      });
+    .then(deletedThought => {
+      if (!deletedThought) {
+          return res.status(404).json({ message: 'No thought with this ID!'})
+      }
+      res.json(deletedThought);
+    })
+  .catch(err => res.json(err));
   },
 
     //update thought by id
